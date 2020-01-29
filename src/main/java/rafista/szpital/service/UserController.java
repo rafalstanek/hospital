@@ -6,26 +6,37 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import rafista.szpital.model.User;
 import rafista.szpital.repository.UsersRepository;
+
+import java.util.List;
 
 @EnableScheduling
 @Component
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
+
     @Autowired
     UsersRepository usersRepository;
 
-    @RequestMapping("/tekst")
-    public String index() {
-        return "Greetings from Spring Boot!";
+    @PostMapping(value = "/create")
+    public User Create(@RequestBody User newUser){
+        usersRepository.save(newUser);
+        usersRepository.flush();
+
+        System.out.println("Dodano użytkownika do bazy "+usersRepository.findAll().size());
+        return newUser;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity isDriverLogged() {
-            return new ResponseEntity<String>("{\"tested\":true}", HttpStatus.OK);
+    @GetMapping("/get")
+    List<User> all() {
+        return usersRepository.findAll();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    void deleteEmployee(@PathVariable int id) {
+        usersRepository.deleteById(id);
     }
 }

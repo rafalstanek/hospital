@@ -1,4 +1,4 @@
-package rafista.szpital;
+package rafista.szpital.service;
 
 
 import org.springframework.http.HttpStatus;

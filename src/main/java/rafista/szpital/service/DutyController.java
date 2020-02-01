@@ -7,23 +7,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rafista.szpital.model.Hospital;
-import rafista.szpital.model.User;
-import rafista.szpital.repository.HospitalsRepository;
+import rafista.szpital.model.Duty;
+import rafista.szpital.repository.DutiesRepository;
 
 @EnableScheduling
 @Component
 @RestController
-@RequestMapping("/api/hospital")
-public class HopistalController {
+@RequestMapping("/api/duty")
+public class DutyController {
 
     @Autowired
-    HospitalsRepository hospitalsRepository;
+    DutiesRepository dutiesRepository;
 
     @PostMapping(value = "/create")
-    public Hospital Create(@RequestBody Hospital newHospital){
-        hospitalsRepository.saveAndFlush(newHospital);
+    public Duty Create(@RequestBody Duty newDuty){
+        dutiesRepository.saveAndFlush(newDuty);
 
-        return newHospital;
+        return newDuty;
     }
 }

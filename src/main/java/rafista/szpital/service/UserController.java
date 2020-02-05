@@ -33,10 +33,9 @@ public class UserController {
            usersRepository.flush();
            return newUser;
        }
-        User user = new User();
-        user.setId(-1);
-        return user;
+        return badUser(-1);
     }
+
 
     @GetMapping("/get")
     public List<User> getAllUser() {
@@ -46,7 +45,7 @@ public class UserController {
     @ResponseBody
     @GetMapping("/login")
     public User getUserByLogin(@RequestParam(name = "login", required = true) String login, @RequestParam(name = "password", required = true) String password){
-        if(login!=null) {
+        if(login!=null && password!=null) {
             User existUser = usersRepository.existsByLogin(login);
             if (existUser != null) {
                 if (existUser.getPassword().equals(password)) {
@@ -54,7 +53,7 @@ public class UserController {
                 }
             }
         }
-        return null;
+        return badUser(-1);
     }
 
     @GetMapping("/get/role/{status}")
@@ -80,24 +79,29 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public User updateUser(@RequestBody User user, @PathVariable int id) {
+    public User updateUser(@PathVariable int id, @RequestParam(name = "oldPassword", required = true) String oldPassword, @RequestParam(name = "password", required = true) String password) {
        boolean exist = usersRepository.existsById(id);
 
         if(exist)
         {
-            if(user!=null && user.getLogin()!=null && user.getPassword()!=null && user.getTitle()!=null && user.getSpeciality()!=null) {
-                User newUser = usersRepository.findById(id).get(0);
-                newUser.setLogin(user.getLogin());
-                newUser.setPassword(user.getPassword());
-                newUser.setTitle(user.getTitle());
-                newUser.setSpeciality(user.getSpeciality());
-                usersRepository.saveAndFlush(newUser);
-                return newUser;
+            User user = usersRepository.findById(id).get(0);
+            if(user.getPassword().equals(oldPassword)){
+                user.setPassword(password);
+                usersRepository.saveAndFlush(user);
+                return user;
+            }
+            else
+            {
+                return badUser(-2);
             }
         }
 
-        return null;
+        return badUser(-1);
     }
 
-
+    private User badUser(int value){
+        User user = new User();
+        user.setId(value);
+        return user;
+    }
 }

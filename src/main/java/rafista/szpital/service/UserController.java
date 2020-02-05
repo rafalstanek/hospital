@@ -27,12 +27,12 @@ public class UserController {
     UsersRepository usersRepository;
 
     @PostMapping(value = "/create")
-    public User Create(@RequestBody User newUser){
-       if(usersRepository.existsByLogin(newUser.getLogin())==null){
-           usersRepository.save(newUser);
-           usersRepository.flush();
-           return newUser;
-       }
+    public User Create(@RequestBody User newUser) {
+        if (usersRepository.existsByLogin(newUser.getLogin()) == null) {
+            usersRepository.save(newUser);
+            usersRepository.flush();
+            return newUser;
+        }
         return badUser(-1);
     }
 
@@ -44,8 +44,8 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/login")
-    public User getUserByLogin(@RequestParam(name = "login", required = true) String login, @RequestParam(name = "password", required = true) String password){
-        if(login!=null && password!=null) {
+    public User getUserByLogin(@RequestParam(name = "login", required = true) String login, @RequestParam(name = "password", required = true) String password) {
+        if (login != null && password != null) {
             User existUser = usersRepository.existsByLogin(login);
             if (existUser != null) {
                 if (existUser.getPassword().equals(password)) {
@@ -57,19 +57,18 @@ public class UserController {
     }
 
     @GetMapping("/get/role/{status}")
-    public Collection<User> getUserByRole(@PathVariable int status){
+    public Collection<User> getUserByRole(@PathVariable int status) {
         return usersRepository.findByRole(status);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteEmployee(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> deleteUser(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) {
         boolean exist = usersRepository.existsById(id);
-        if(exist){
+        if (exist) {
             usersRepository.deleteById(id);
             System.out.println(response.getStatus());
             return new ResponseEntity<>("User has been deleted!", HttpStatus.OK);
-        }
-        else{
+        } else {
             System.out.println(response.getStatus());
             return new ResponseEntity<>(
                     "User not found",
@@ -80,18 +79,15 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     public User updateUser(@PathVariable int id, @RequestParam(name = "oldPassword", required = true) String oldPassword, @RequestParam(name = "password", required = true) String password) {
-       boolean exist = usersRepository.existsById(id);
+        boolean exist = usersRepository.existsById(id);
 
-        if(exist)
-        {
+        if (exist) {
             User user = usersRepository.findById(id).get(0);
-            if(user.getPassword().equals(oldPassword)){
+            if (user.getPassword().equals(oldPassword)) {
                 user.setPassword(password);
                 usersRepository.saveAndFlush(user);
                 return user;
-            }
-            else
-            {
+            } else {
                 return badUser(-2);
             }
         }
@@ -99,7 +95,7 @@ public class UserController {
         return badUser(-1);
     }
 
-    private User badUser(int value){
+    private User badUser(int value) {
         User user = new User();
         user.setId(value);
         return user;

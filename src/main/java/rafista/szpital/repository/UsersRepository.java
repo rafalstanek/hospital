@@ -11,6 +11,9 @@ import java.util.List;
 public interface UsersRepository extends JpaRepository<User, Integer> {
     List<User> findById(int id);
 
+    @Query(value = "SELECT * FROM USER u WHERE u.id = :id",  nativeQuery = true)
+    User findUserById(int id);
+
     @Query(value = "SELECT * FROM USER u WHERE u.login = :login",  nativeQuery = true)
     User existsByLogin(String login);
 

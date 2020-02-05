@@ -30,6 +30,12 @@ public class Duty {
     @Column(name = "CHANGEABLE")
     private boolean Changeable;
 
+    @ManyToOne
+    private User User;
+
+    @ManyToOne
+    private Hospital hospital;
+
     public Duty(){
 
     }
@@ -88,5 +94,21 @@ public class Duty {
 
     public void setChangeable(boolean changeable) {
         Changeable = changeable;
+    }
+
+    public rafista.szpital.model.User getUser() {
+        return User;
+    }
+
+    public void setUser(rafista.szpital.model.User user) {
+        User = user;
+    }
+
+    public Hospital getHospital() {
+        return hospital;
+    }
+
+    public void setHospital(Hospital hospital) {
+        this.hospital = hospital;
     }
 }

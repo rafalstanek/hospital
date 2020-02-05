@@ -11,6 +11,9 @@ import java.util.List;
 public interface HospitalsRepository extends JpaRepository<Hospital, Integer> {
     List<Hospital> findById(int id);
 
+    @Query(value = "SELECT * FROM HOSPITAL u WHERE u.id = :id",  nativeQuery = true)
+    Hospital findHospitalById(int id);
+
     @Query(value = "SELECT * FROM HOSPITAL u WHERE u.name = :name",  nativeQuery = true)
     Collection<Hospital> findByName(@Param("name") String hospitalName);
 }

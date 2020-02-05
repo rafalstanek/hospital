@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import rafista.szpital.model.User;
 import rafista.szpital.repository.UsersRepository;
@@ -27,11 +28,14 @@ public class UserController {
 
     @PostMapping(value = "/create")
     public User Create(@RequestBody User newUser){
-        usersRepository.save(newUser);
-        usersRepository.flush();
-
-        System.out.println("Dodano użytkownika do bazy "+usersRepository.findAll().size());
-        return newUser;
+       if(usersRepository.existsByLogin(newUser.getLogin())==null){
+           usersRepository.save(newUser);
+           usersRepository.flush();
+           return newUser;
+       }
+        User user = new User();
+        user.setId(-1);
+        return user;
     }
 
     @GetMapping("/get")
@@ -39,8 +43,22 @@ public class UserController {
         return usersRepository.findAll();
     }
 
+    @ResponseBody
+    @GetMapping("/login")
+    public User getUserByLogin(@RequestParam(name = "login", required = true) String login, @RequestParam(name = "password", required = true) String password){
+        if(login!=null) {
+            User existUser = usersRepository.existsByLogin(login);
+            if (existUser != null) {
+                if (existUser.getPassword().equals(password)) {
+                    return existUser;
+                }
+            }
+        }
+        return null;
+    }
+
     @GetMapping("/get/role/{status}")
-    public Collection<User> getCasualUser(@PathVariable int status){
+    public Collection<User> getUserByRole(@PathVariable int status){
         return usersRepository.findByRole(status);
     }
 

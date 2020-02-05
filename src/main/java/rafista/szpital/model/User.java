@@ -1,7 +1,9 @@
 package rafista.szpital.model;
 import lombok.Data;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -33,6 +35,9 @@ public class User {
 
         @Column(name = "SPECIALITY")
         private String Speciality;
+
+//        @OneToMany(mappedBy = "USER", cascade = CascadeType.ALL, orphanRemoval = true)
+//        private List<Duty> listDuty;
 
         public User(String firstName, String lastName, String login, String password, String title, int role, String speciality) {
                 FirstName = firstName;

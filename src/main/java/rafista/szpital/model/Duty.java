@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 @Entity
 @Data
@@ -22,10 +24,10 @@ public class Duty {
     private int IdUser;
 
     @Column(name = "START")
-    private Date DateStart;
+    private Timestamp DateStart;
 
     @Column(name = "END")
-    private Date DateEnd;
+    private Timestamp DateEnd;
 
     @Column(name = "CHANGEABLE")
     private boolean Changeable;
@@ -40,7 +42,7 @@ public class Duty {
 
     }
 
-    public Duty(int idHospital, int idUser, Date dateStart, Date dateEnd, boolean changeable) {
+    public Duty(int idHospital, int idUser, Timestamp dateStart, Timestamp dateEnd, boolean changeable) {
         IdHospital = idHospital;
         IdUser = idUser;
         DateStart = dateStart;
@@ -72,19 +74,19 @@ public class Duty {
         IdUser = idUser;
     }
 
-    public Date getDateStart() {
+    public Timestamp getDateStart() {
         return DateStart;
     }
 
-    public void setDateStart(Date dateStart) {
+    public void setDateStart(Timestamp dateStart) {
         DateStart = dateStart;
     }
 
-    public Date getDateEnd() {
+    public Timestamp getDateEnd() {
         return DateEnd;
     }
 
-    public void setDateEnd(Date dateEnd) {
+    public void setDateEnd(Timestamp dateEnd) {
         DateEnd = dateEnd;
     }
 

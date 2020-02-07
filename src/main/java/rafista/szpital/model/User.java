@@ -37,10 +37,7 @@ public class User {
     @Column(name = "SPECIALITY")
     private String Speciality;
 
-    @Column(name = "PLAN")
-    private String Plan;
-
-    public User(String firstName, String lastName, String login, String password, String title, int role, String speciality, String plan) {
+    public User(String firstName, String lastName, String login, String password, String title, int role, String speciality) {
         FirstName = firstName;
         LastName = lastName;
         Login = login;
@@ -48,7 +45,6 @@ public class User {
         Title = title;
         Role = role;
         Speciality = speciality;
-        Plan = plan;
     }
 
     public User() {
@@ -116,13 +112,5 @@ public class User {
 
     public void setSpeciality(String speciality) {
         Speciality = speciality;
-    }
-
-    public String getPlan() {
-        return Plan;
-    }
-
-    public void setPlan(String plan) {
-        Plan = plan;
     }
 }

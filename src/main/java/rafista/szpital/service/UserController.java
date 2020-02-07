@@ -77,7 +77,7 @@ public class UserController {
 
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/password/{id}")
     public User updateUser(@PathVariable int id, @RequestParam(name = "oldPassword", required = true) String oldPassword, @RequestParam(name = "password", required = true) String password) {
         boolean exist = usersRepository.existsById(id);
 

@@ -9,7 +9,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import rafista.szpital.model.Duty;
 import rafista.szpital.model.User;
+import rafista.szpital.repository.DutiesRepository;
 import rafista.szpital.repository.UsersRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +27,9 @@ public class UserController {
 
     @Autowired
     UsersRepository usersRepository;
+
+    @Autowired
+    DutiesRepository dutiesRepository;
 
     @PostMapping(value = "/create")
     public User Create(@RequestBody User newUser) {
@@ -65,6 +70,10 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) {
         boolean exist = usersRepository.existsById(id);
         if (exist) {
+            List<Duty> allDutyOfUser = dutiesRepository.findByUser(id);
+            for (Duty duty : allDutyOfUser) {
+                dutiesRepository.delete(duty);
+            }
             usersRepository.deleteById(id);
             System.out.println(response.getStatus());
             return new ResponseEntity<>("User has been deleted!", HttpStatus.OK);

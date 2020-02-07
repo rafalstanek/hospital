@@ -1,6 +1,7 @@
 package rafista.szpital.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import rafista.szpital.model.Duty;
 
@@ -24,4 +25,5 @@ public interface DutiesRepository extends JpaRepository<Duty, Integer> {
 
     @Query(value = "SELECT * FROM DUTY u WHERE u.START < :currentTime",  nativeQuery = true)
     List<Duty> findOldDuties(Timestamp currentTime);
+
 }

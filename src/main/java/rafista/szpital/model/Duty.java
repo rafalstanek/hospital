@@ -1,6 +1,8 @@
 package rafista.szpital.model;
 
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -32,10 +34,10 @@ public class Duty {
     @Column(name = "CHANGEABLE")
     private boolean Changeable;
 
-    @ManyToOne
+    @OneToOne
     private User User;
 
-    @ManyToOne
+    @OneToOne
     private Hospital hospital;
 
     public Duty(){

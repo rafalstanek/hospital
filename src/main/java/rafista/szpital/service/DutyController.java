@@ -41,10 +41,25 @@ public class DutyController {
         Hospital hospital = hospitalsRepository.findHospitalById(newDuty.getIdHospital());
         User user = usersRepository.findUserById(newDuty.getIdUser());
         if (hospital != null && user != null) {
-            newDuty.setUser(user);
-            newDuty.setHospital(hospital);
-            dutiesRepository.saveAndFlush(newDuty);
-            return newDuty;
+            List<Duty> myDuties = dutiesRepository.findByUser(newDuty.getIdUser());
+            boolean isDutyTimeExist=false;
+            for (Duty dutyMy : myDuties) {
+                if (checkDutyTimestamp(dutyMy.getDateStart(), dutyMy.getDateEnd(), newDuty.getDateStart(), newDuty.getDateEnd())) {
+                    isDutyTimeExist=true;
+                    break;
+                }
+            }
+            if(!isDutyTimeExist)
+            {
+                newDuty.setUser(user);
+                newDuty.setHospital(hospital);
+                dutiesRepository.saveAndFlush(newDuty);
+                return newDuty;
+            }
+            else
+            {
+                return badDuty(-2); //istnieje juz taka pora
+            }
         }
         return badDuty(-1);
     }
@@ -96,10 +111,10 @@ public class DutyController {
         return dutiesRepository.findByUser(userId);
     }
 
-    @PutMapping("/update/{id}")
-    public Duty updateDuty(@PathVariable int id) {
+    @PutMapping("/update/changeable/{id}")
+    public Duty updateDuty(@PathVariable int id, @RequestParam(name = "userId", required = true) int userId) {
         Duty duty = dutiesRepository.findDutyById(id);
-        if (duty != null) {
+        if (duty != null && duty.getUser().getId()==userId) {
             duty.setChangeable(!duty.isChangeable());
             dutiesRepository.saveAndFlush(duty);
             return duty;
@@ -108,24 +123,48 @@ public class DutyController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteDuty(@PathVariable int id, HttpServletRequest request, HttpServletResponse response) {
+    public Duty deleteDuty(@PathVariable int id, @RequestParam(name = "userId", required = true) int userId) {
         boolean exist = dutiesRepository.existsById(id);
         if (exist) {
-            dutiesRepository.deleteById(id);
-            return new ResponseEntity<>("Duty has been deleted!", HttpStatus.OK);
+            Duty duty = dutiesRepository.findDutyById(id);
+            if(duty.getUser().getId()==userId)
+            {
+                dutiesRepository.deleteById(id);
+                return badDuty(-1); //success
+            }
         } else {
-            System.out.println(response.getStatus());
-            return new ResponseEntity<>(
-                    "Duty not found",
-                    HttpStatus.BAD_REQUEST);
-        }
 
+            return badDuty(-2);
+        }
+        return badDuty(-2);
     }
 
     @PutMapping("/take/{dutyId}")
-    public Duty takeDuty(@PathVariable int dutyId, @RequestParam(name = "userId", required = true) int userId) {
-        //sprawdz czy w tym czasie nie ma innej duty
-        return null;
+    public Duty takeDuty(@PathVariable int dutyId, @RequestParam(name = "userId", required = true) int userId, @RequestParam(name = "oldUserId", required = true) int oldUserId) {
+        Duty duty = dutiesRepository.findDutyById(dutyId);
+        if(duty!=null)
+        {
+            if(duty.getUser().getId()==oldUserId && duty.isChangeable()){
+                User newUser = usersRepository.findUserById(userId);
+                if(newUser!=null)
+                {
+                    duty.setUser(newUser);
+                    duty.setIdUser(newUser.getId());
+                    duty.setChangeable(false);
+                    dutiesRepository.saveAndFlush(duty);
+                    return duty;
+                }
+                else
+                {
+                    return badDuty(-1);
+                }
+            }
+            else
+            {
+                return badDuty(-2); //ten dyzur nalezy juz do kogos innego
+            }
+        }
+        return badDuty(-1);
     }
 
     private void deleteOldDuties() {

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -51,9 +52,10 @@ public class UserController {
     @GetMapping("/login")
     public User getUserByLogin(@RequestParam(name = "login", required = true) String login, @RequestParam(name = "password", required = true) String password) {
         if (login != null && password != null) {
+            BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
             User existUser = usersRepository.existsByLogin(login);
             if (existUser != null) {
-                if (existUser.getPassword().equals(password)) {
+                if (bcrypt.matches(password, existUser.getPassword())) {
                     return existUser;
                 }
             }
@@ -89,10 +91,10 @@ public class UserController {
     @PutMapping("/update/password/{id}")
     public User updateUser(@PathVariable int id, @RequestParam(name = "oldPassword", required = true) String oldPassword, @RequestParam(name = "password", required = true) String password) {
         boolean exist = usersRepository.existsById(id);
-
+        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
         if (exist) {
             User user = usersRepository.findById(id).get(0);
-            if (user.getPassword().equals(oldPassword)) {
+            if (bcrypt.matches(oldPassword, user.getPassword())) {
                 user.setPassword(password);
                 usersRepository.saveAndFlush(user);
                 return user;

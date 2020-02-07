@@ -71,21 +71,31 @@ public class DutyController {
     }
 
     @GetMapping("/get/changeable")
-    public List<Duty> getAllChangeAbleDuty(@RequestParam(name = "userId", required = true) int userId) {
+    public List<Duty> getAllChangeAbleDuty(@RequestParam(name = "userId", required = true) int userId, @RequestParam(name = "hospitalId", required = true) int hospitalId) {
         deleteOldDuties();
         List<Duty> myDuties = dutiesRepository.findByUser(userId);
-        List<Duty> dutiesToChange = dutiesRepository.findAllChangeableDuty(userId);
+        List<Duty> dutiesToChange = null;
+        if(hospitalId>0){
+           dutiesToChange  = dutiesRepository.findAllChangeableDutyByHospital(userId, hospitalId);
+        }else{
+            dutiesToChange = dutiesRepository.findAllChangeableDuty(userId);
+        }
+
         List<Duty> returnList = new ArrayList<>();
 
         if (myDuties.size() == 0) {
             return dutiesToChange;
         }
         for (Duty dutyChange : dutiesToChange) {
+            boolean isExist = false;
             for (Duty dutyMy : myDuties) {
-                if (!checkDutyTimestamp(dutyChange.getDateStart(), dutyChange.getDateEnd(), dutyMy.getDateStart(), dutyMy.getDateEnd())) {
-                    returnList.add(dutyChange);
+                if (checkDutyTimestamp(dutyChange.getDateStart(), dutyChange.getDateEnd(), dutyMy.getDateStart(), dutyMy.getDateEnd())) {
+                    isExist=true;
+                    break;
                 }
             }
+            if(!isExist)
+                returnList.add(dutyChange);
         }
 
         return returnList;
@@ -97,12 +107,6 @@ public class DutyController {
             return true;
         }
         return false;
-    }
-
-    @GetMapping("/get/changeable/hospital")
-    public List<Duty> getAllChangeAbleDutyByHospital(@RequestParam(name = "userId", required = true) int userId,
-                                                     @RequestParam(name = "hospitalId", required = true) int hospitalId) {
-        return dutiesRepository.findAllChangeableDutyByHospital(userId, hospitalId);
     }
 
     @GetMapping("/get/{userId}")

@@ -22,7 +22,6 @@ public class HospitalController {
     @PostMapping(value = "/create")
     public Hospital Create(@RequestBody Hospital newHospital){
         hospitalsRepository.saveAndFlush(newHospital);
-
         return newHospital;
     }
 

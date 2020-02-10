@@ -131,16 +131,21 @@ public class DutyController {
         boolean exist = dutiesRepository.existsById(id);
         if (exist) {
             Duty duty = dutiesRepository.findDutyById(id);
-            if(duty.getUser().getId()==userId)
+            User user = usersRepository.findUserById(userId);
+            if(duty.getUser().getId()==userId || user.getRole()==0)
             {
                 dutiesRepository.deleteById(id);
                 return badDuty(-1); //success
+            }
+            else
+                {
+                return badDuty(-3);
             }
         } else {
 
             return badDuty(-2);
         }
-        return badDuty(-2);
+        //return badDuty(-3);
     }
 
     @PutMapping("/take/{dutyId}")

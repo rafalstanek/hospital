@@ -35,6 +35,11 @@ public class WardController {
         return wardsRepository.findAll();
     }
 
+    @GetMapping("/get/hospital")
+    public List<Ward> getAllWardsByHospital(@RequestParam(name = "hospitalId", required = true) int hospitalId) {
+        return wardsRepository.findByHospital(hospitalId);
+    }
+
     private Ward badWard(int value) {
         Ward ward = new Ward();
         ward.setId(value);

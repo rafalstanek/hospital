@@ -16,4 +16,5 @@ public interface HospitalsRepository extends JpaRepository<Hospital, Integer> {
 
     @Query(value = "SELECT * FROM HOSPITAL u WHERE u.name = :name",  nativeQuery = true)
     Collection<Hospital> findByName(@Param("name") String hospitalName);
+
 }

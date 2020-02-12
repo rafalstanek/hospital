@@ -7,7 +7,7 @@ import rafista.szpital.model.Ward;
 import java.util.List;
 
 public interface WardsRepository extends JpaRepository<Ward, Integer> {
-    @Query(value = "SELECT * FROM WARD w WHERE w.hospital_id = :id",  nativeQuery = true)
+    @Query(value = "SELECT * FROM WARD w WHERE w.id_hospital = :id",  nativeQuery = true)
     List<Ward> findByHospital(int id);
 
     @Query(value = "SELECT * FROM WARD w WHERE w.name = :name",  nativeQuery = true)
